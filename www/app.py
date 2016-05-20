@@ -1,5 +1,5 @@
 from flask import Flask, request, session, abort, jsonify, redirect, url_for, abort, render_template, flash
-from model import User, Questionnaire, Topic, next_id, Menu
+from model import User, Questionnaire, Topic, next_id, Menu, Vote
 from database import db_session
 from datetime import datetime
 
@@ -57,7 +57,11 @@ def add_menu():
 def vote():
     menu_id = request.form['id']
     value = request.form['value']
-    return str(menu_id, value)
+    vote = Vote(id=next_id(),menu_id=menu_id,value=value)
+    dbs = db_session
+    dbs.add(vote)
+    dbs.commit()
+    dbs.close()
 
 if __name__ == "__main__":
     app.debug = True
