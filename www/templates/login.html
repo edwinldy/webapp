@@ -1,0 +1,20 @@
+{% extends '__base__.html' %}
+{% block title %}登录{% endblock %}
+{% block body %}
+<!-- /.container -->
+<div class="container">
+<form class="form-signin" action="{{ url_for('login') }}" method="post">
+  <h2 class="form-signin-heading">Please login</h2>
+  <label for="inputEmail" class="sr-only">Email address</label>
+  <input id="inputEmail" name="email" class="form-control" placeholder="{{ message['email'] }}" required="" autofocus="" type="email">
+  <label for="inputPassword" class="sr-only">Password</label>
+  <input id="inputPassword" name="password" class="form-control" placeholder="{{ message['password'] }}" required="" type="password">
+  <div class="checkbox">
+    <label>
+      <input value="remember-me" type="checkbox"> Remember me
+    </label>
+  </div>
+  <button class="btn btn-lg btn-primary btn-block" type="submit">login</button>
+</form>
+</div>
+{% endblock %}

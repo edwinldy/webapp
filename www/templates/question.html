@@ -1,0 +1,39 @@
+{% extends '__base__.html' %}
+{% block title %}投票{% endblock %}
+{% block body %}
+<!-- /.container -->
+<div class="container">
+<form class="form-vote" action="{{ url_for('vote') }}" method="post">
+  <table class="table">
+  <tr><th>菜名</th><th>请做出评价</th></tr>
+  {% for menu in data['menus'] %}
+    <tr>
+      <td>
+      <label for="inputOption">{{ menu['content'] }}</label>
+      </td>
+      <td>
+      <div class="btn-group" data-toggle="buttons">
+        <button type="button" id="{{ menu['id'] }}" class="option btn btn-primary" value=1>喜欢
+        <span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span>
+        </button>
+        <button type="button" id="{{ menu['id'] }}" class="option btn btn-primary" value=0>不喜欢
+        <span class="glyphicon glyphicon-thumbs-down" aria-hidden="true"></span>
+        </button>
+      </div>
+      </td>
+    </tr>
+  {% endfor %}
+  </table>
+</form>
+</div>
+<script>
+  var json = {};
+  $('.option').on('click', function () {
+    json['id'] = this.id;
+    json['value'] = this.value;
+    json = JSON.stringify(json);
+    alert(json)
+    json = {}
+  })
+</script>
+{% endblock %}
