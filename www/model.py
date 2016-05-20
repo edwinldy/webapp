@@ -1,6 +1,6 @@
 # 导入:
 # UniqueConstraint用于unique约束条件
-from sqlalchemy import Column, String, Text, Float, Boolean, UniqueConstraint, ForeignKey
+from sqlalchemy import Column, String, Text, Float, Boolean, UniqueConstraint, ForeignKey, Integer
 from database import Base
 import time, uuid
 from datetime import datetime
@@ -15,7 +15,7 @@ class User(Base):
     __tablename__ = 'users'
 
     # 表的结构:
-    id = Column(String(50), default=next_id(), primary_key=True)
+    id = Column(String(50), primary_key=True)
     email = Column(String(50), unique=True) # unique=True，必须唯一
     passwd = Column(String(50))
     admin = Column(Boolean(), default=False)
@@ -29,7 +29,7 @@ class User(Base):
 class Questionnaire(Base):
     __tablename__ = 'questionnaire'
 
-    id = Column(String(50), default=next_id(), primary_key=True)
+    id = Column(String(50), primary_key=True)
     content = Column(String(100))
     created_by = Column(String(50))
     created_at = Column(Float(), default=time.time)
@@ -40,7 +40,7 @@ class Questionnaire(Base):
 class Topic(Base):
     __tablename__ = 'topics'
 
-    id = Column(String(50), default=next_id(), primary_key=True)
+    id = Column(String(50), primary_key=True)
     questionnaire_id = Column(String(50))
     content = Column(String(100))
     topic_type = Column(Boolean(), default=True)
@@ -63,10 +63,14 @@ class Menu(Base):
 class Vote(Base):
     __tablename__ = 'votes'
 
-    id = Column(String(50), default=next_id(), primary_key=True)
+    id = Column(String(50), primary_key=True)
     menu_id = Column(String(32))
     user_id = Column(String(50))
+    value = Column(Integer())
     created_at = Column(Float(), default=time.time)
+    
+    def to_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
 '''
 # 初始化数据库连接:
@@ -101,6 +105,7 @@ if __name__ == "__main__":
     DBSession = sessionmaker(bind=engine)
     session = DBSession()
     Base = declarative_base()
+    # User.metadata.create_all(bind=engine)
     # new_user = User(email="admin@example.com", passwd='123456',name='amin',)
     # session.add(new_user)
     # session.commit()
