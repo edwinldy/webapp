@@ -5,18 +5,24 @@
 <div class="container">
 <form class="form-vote" action="{{ url_for('vote') }}" method="post">
   <table class="table">
-  <tr><th>菜名</th><th>请做出评价</th></tr>
+  <tr><th>菜名</th><th>好评率</th><th>请做出评价</th></tr>
   {% for menu in data['menus'] %}
     <tr>
       <td>
       <label for="inputOption">{{ menu['content'] }}</label>
       </td>
       <td>
+        <div class="progress">
+        <div id= {{ menu['id'] }} class="progress-bar" role="progressbar" aria-valuenow="00" aria-valuemin="0" aria-valuemax="100" style="width: 00%;">
+        </div>
+        </div>
+      </td>
+      <td>
       <div class="btn-group" data-toggle="buttons">
-        <button type="button" id="{{ menu['id'] }}" class="option btn btn-primary" value=1>喜欢
+        <button type="button" id="{{ menu['id'] }}" class="option btn btn-primary {{ menu['id'] }}" value=1>喜欢
         <span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span>
         </button>
-        <button type="button" id="{{ menu['id'] }}" class="option btn btn-primary" value=0>不喜欢
+        <button type="button" id="{{ menu['id'] }}" class="option btn btn-primary {{ menu['id'] }}" value=0>不喜欢
         <span class="glyphicon glyphicon-thumbs-down" aria-hidden="true"></span>
         </button>
       </div>
@@ -28,12 +34,18 @@
 </div>
 <script>
   var json = {};
-  $('.option').on('click', function () {
-    json['id'] = this.id;
-    json['value'] = this.value;
-    json = JSON.stringify(json);
-    alert(json)
-    json = {}
+  $('.option').not('disabled').on('click', function () {
+    var send_data={"id":this.id,"value":this.value};
+    id = this.id
+    $('button.'+this.id).attr('disabled','disabled');
+    //alert(send_data);
+    $.post("/api/vote",send_data,function(data,ts){
+    //data 是后台返回的值，如可判断返回1时表示ok。ts表示状态，不必管它。
+    $('div#'+id).attr("aria-valuenow",data)
+    $('div#'+id).attr("style","width: "+data+"%;")
+    $('div#'+id).text(data+"%")
+    //
+    })
   })
 </script>
 {% endblock %}

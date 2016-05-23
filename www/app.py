@@ -2,6 +2,7 @@ from flask import Flask, request, session, abort, jsonify, redirect, url_for, ab
 from model import User, Questionnaire, Topic, next_id, Menu, Vote
 from database import db_session
 from datetime import datetime
+import uuid
 
 app = Flask(__name__)
 #SECRET_KEY必须要设置，否则使用session会出错
@@ -46,10 +47,11 @@ def menu():
 def add_menu():
     date = request.form['date']
     content = request.form['content']
-    menu = Menu(content=content, date=date)
+    menu = Menu(id=uuid.uuid4().hex,content=content, date=date)
     dbs = db_session
     dbs.add(menu)
     dbs.commit()
+    dbs.close()
     return redirect(url_for('menu'))
 
 
@@ -58,10 +60,15 @@ def vote():
     menu_id = request.form['id']
     value = request.form['value']
     vote = Vote(id=next_id(),menu_id=menu_id,value=value)
+    socre = []
     dbs = db_session
     dbs.add(vote)
     dbs.commit()
+    # data = {"votes":[v.to_dict() for v in Vote.query.filter(Vote.menu_id == menu_id).all()]}
+    for v in Vote.query.filter(Vote.menu_id == menu_id).all():
+        socre.append(v.value)
     dbs.close()
+    return str(int(sum(socre)/len(socre)*100))
 
 if __name__ == "__main__":
     app.debug = True
